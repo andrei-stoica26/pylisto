@@ -1,15 +1,19 @@
 from __future__ import annotations
 
+from typing import Callable
+
 import numpy as np
 import pandas as pd
+from numpy.typing import ArrayLike, NDArray
 from statsmodels.stats.multitest import multipletests
 
-def bf_correct_v(pvals, n_comp):
+
+def bf_correct_v(
+    pvals: ArrayLike,
+    n_comp: int,
+) -> NDArray[np.float64]:
     """
     Perform Bonferroni correction on a vector of p-values.
-
-    Unlike standard implementations, this allows n_comp to be smaller
-    or larger than len(pvals), matching the R implementation.
 
     Parameters
     ----------
@@ -23,10 +27,15 @@ def bf_correct_v(pvals, n_comp):
     np.ndarray
         Bonferroni-adjusted p-values.
     """
-    pvals = np.asarray(pvals, dtype=float)
-    return np.minimum(pvals * n_comp, 1.0)
+    pvals_array: NDArray[np.float64] = np.asarray(pvals, dtype=float)
+    return np.minimum(pvals_array * n_comp, 1.0)
 
-def mt_correct_helper(pvals, mt_method="fdr_by", n_comp=None):
+
+def mt_correct_helper(
+    pvals: ArrayLike,
+    mt_method: str = "fdr_by",
+    n_comp: int | None = None,
+) -> NDArray[np.float64]:
     """
     Helper function for multiple comparison testing.
 
@@ -36,7 +45,7 @@ def mt_correct_helper(pvals, mt_method="fdr_by", n_comp=None):
         Numeric vector of p-values.
     mt_method : str
         One of:
-        'bonferroni', 'sidak', 'holm-sidak', 'holm', 'simes-hochberg', 
+        'bonferroni', 'sidak', 'holm-sidak', 'holm', 'simes-hochberg',
         'hommel', 'fdr_bh', 'fdr_by', 'fdr_tsbh', 'fdr_tsbky'
     n_comp : int or None
         Number of comparisons.
@@ -46,42 +55,54 @@ def mt_correct_helper(pvals, mt_method="fdr_by", n_comp=None):
     np.ndarray
         Adjusted p-values.
     """
-    pvals = np.asarray(pvals, dtype=float)
+    pvals_array: NDArray[np.float64] = np.asarray(pvals, dtype=float)
 
     if n_comp is None:
-        n_comp = len(pvals)
+        n_comp = len(pvals_array)
 
-    mt_methods = ['bonferroni', 'sidak', 'holm-sidak', 'holm', 'simes-hochberg', 
-        'hommel', 'fdr_bh', 'fdr_by', 'fdr_tsbh', 'fdr_tsbky']
+    mt_methods: list[str] = [
+        "bonferroni",
+        "sidak",
+        "holm-sidak",
+        "holm",
+        "simes-hochberg",
+        "hommel",
+        "fdr_bh",
+        "fdr_by",
+        "fdr_tsbh",
+        "fdr_tsbky",
+    ]
 
     if mt_method not in mt_methods:
         raise ValueError(f"Unsupported mt_method: {mt_method}")
 
-    if n_comp >= len(pvals):
+    if n_comp >= len(pvals_array):
         if mt_method == "none":
-            return pvals.copy()
+            return pvals_array.copy()
 
-        adjusted = multipletests(
-            pvals,
+        adjusted: NDArray[np.float64] = multipletests(
+            pvals_array,
             alpha=0.05,
-            method=mt_method
+            method=mt_method,
         )[1]
+
         return adjusted
 
     if mt_method == "bonferroni":
-        return bf_correct_v(pvals, n_comp)
+        return bf_correct_v(pvals_array, n_comp)
 
     raise ValueError(
         "`n_comp` can be greater than the number of rows "
         "only if `mt_method` is set to 'bonferroni'."
     )
 
+
 def mt_correct_v(
-    pvals,
-    mt_method="fdr_by",
-    mt_stat="identity",
-    n_comp=None
-):
+    pvals: ArrayLike,
+    mt_method: str = "fdr_by",
+    mt_stat: str = "identity",
+    n_comp: int | None = None,
+) -> NDArray[np.float64] | float:
     """
     Perform multiple testing correction on a vector of p-values.
 
@@ -91,7 +112,7 @@ def mt_correct_v(
         Numeric vector of p-values.
     mt_method : str
         One of:
-        'bonferroni', 'sidak', 'holm-sidak', 'holm', 'simes-hochberg', 
+        'bonferroni', 'sidak', 'holm-sidak', 'holm', 'simes-hochberg',
         'hommel', 'fdr_bh', 'fdr_by', 'fdr_tsbh', 'fdr_tsbky'
     mt_stat : str
         One of:
@@ -105,13 +126,16 @@ def mt_correct_v(
         Adjusted p-values if mt_stat='identity',
         otherwise the requested summary statistic.
     """
-    adjusted = mt_correct_helper(
+    adjusted: NDArray[np.float64] = mt_correct_helper(
         pvals=pvals,
         mt_method=mt_method,
-        n_comp=n_comp
+        n_comp=n_comp,
     )
 
-    stat_map = {
+    stat_map: dict[
+        str,
+        Callable[[NDArray[np.float64]], NDArray[np.float64] | float],
+    ] = {
         "identity": lambda x: x,
         "median": np.median,
         "mean": np.mean,
@@ -126,14 +150,14 @@ def mt_correct_v(
 
 
 def mt_correct_df(
-    df,
-    mt_method="fdr_by",
-    col_str="pval",
-    new_col_str="pvalAdj",
-    pval_thr=0.05,
-    do_order=True,
-    n_comp=None
-):
+    df: pd.DataFrame,
+    mt_method: str = "fdr_by",
+    col_str: str = "pval",
+    new_col_str: str = "pvalAdj",
+    pval_thr: float | None = 0.05,
+    do_order: bool = True,
+    n_comp: int | None = None,
+) -> pd.DataFrame:
     """
     Perform multiple testing correction on a DataFrame column.
 
@@ -169,7 +193,7 @@ def mt_correct_df(
         df[col_str].values,
         mt_method=mt_method,
         mt_stat="identity",
-        n_comp=n_comp
+        n_comp=n_comp,
     )
 
     if pval_thr is not None:
@@ -180,17 +204,19 @@ def mt_correct_df(
 
     return df.reset_index(drop=True)
 
+
 if __name__ == "__main__":
     pvals = [0.032, 0.001, 0.0045, 0.051, 0.048]
 
     print("Vector correction:")
     print(mt_correct_v(pvals))
 
-    df = pd.DataFrame({
-        "elem": ["A", "B", "C", "D", "E"],
-        "pval": pvals
-    })
+    df = pd.DataFrame(
+        {
+            "elem": ["A", "B", "C", "D", "E"],
+            "pval": pvals,
+        }
+    )
 
     print("\nDataFrame correction:")
     print(mt_correct_df(df))
-
