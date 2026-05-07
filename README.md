@@ -12,13 +12,11 @@ universe.
 While `pyLISTO` has been developed with scRNA-seq data analysis in mind, 
 the methodology is fully applicable for the same problem arising in any other 
 setting. Thus, the implementation of `pyLISTO` uses general Python objects 
-(data frames, character vectors), rather than scRNA-seq-specific objects.
+(Pandas data frames, character lists), rather than scRNA-seq-specific objects.
 
 ## Installation
 
 Work in progress
-
-```
 
 ## Description and usage
 
