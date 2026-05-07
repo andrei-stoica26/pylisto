@@ -1,20 +1,17 @@
 import pandas as pd
-from typing import Any, List
 
-
-def check_num_col(obj: Any, num_col: str) -> None:
+def check_num_col(
+    obj: pd.DataFrame | list[str],
+    num_col: str,
+) -> None:
     """
     Check if num_col is valid input for an object.
 
-    If obj is a pandas DataFrame:
-    - Verify that num_col exists as a column
-    - Verify that the num_col column is numeric
-
-    Raises
-    ------
-    ValueError
-        If the required column is missing or not numeric.
+    Valid inputs:
+    - pandas DataFrame
+    - list of character strings
     """
+
     if isinstance(obj, pd.DataFrame):
         if num_col not in obj.columns:
             raise ValueError(
@@ -27,15 +24,19 @@ def check_num_col(obj: Any, num_col: str) -> None:
             )
 
 
-def check_num_col_all(objs: List[Any], num_col: str) -> None:
+def check_num_col_all(
+    objs: list[pd.DataFrame] | list[list[str]],
+    num_col: str,
+) -> None:
     """
     Check if num_col is valid input for a list of objects.
 
     Parameters
     ----------
-    objs : list
-        A list containing pandas DataFrames with a numeric column
-        or character vectors (e.g., lists of strings).
+    objs : list[pd.DataFrame] | list[list[str]]
+        A list containing either:
+        - pandas DataFrames with a numeric column, or
+        - lists of character strings.
     num_col : str
         Name of the numeric column to validate.
 
