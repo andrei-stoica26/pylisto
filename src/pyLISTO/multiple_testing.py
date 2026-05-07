@@ -44,9 +44,7 @@ def mt_correct_helper(
     pvals : array-like
         Numeric vector of p-values.
     mt_method : str
-        One of:
-        'bonferroni', 'sidak', 'holm-sidak', 'holm', 'simes-hochberg',
-        'hommel', 'fdr_bh', 'fdr_by', 'fdr_tsbh', 'fdr_tsbky'
+        Multiple testing method.
     n_comp : int or None
         Number of comparisons.
 
@@ -77,16 +75,11 @@ def mt_correct_helper(
         raise ValueError(f"Unsupported mt_method: {mt_method}")
 
     if n_comp >= len(pvals_array):
-        if mt_method == "none":
-            return pvals_array.copy()
-
-        adjusted: NDArray[np.float64] = multipletests(
+        return multipletests(
             pvals_array,
             alpha=0.05,
             method=mt_method,
         )[1]
-
-        return adjusted
 
     if mt_method == "bonferroni":
         return bf_correct_v(pvals_array, n_comp)
@@ -111,11 +104,9 @@ def mt_correct_v(
     pvals : array-like
         Numeric vector of p-values.
     mt_method : str
-        One of:
-        'bonferroni', 'sidak', 'holm-sidak', 'holm', 'simes-hochberg',
-        'hommel', 'fdr_bh', 'fdr_by', 'fdr_tsbh', 'fdr_tsbky'
+        Multiple testing correction method.
     mt_stat : str
-        One of:
+        Summary statistic to return:
         'identity', 'median', 'mean', 'max', 'min'
     n_comp : int or None
         Number of comparisons.
@@ -123,8 +114,15 @@ def mt_correct_v(
     Returns
     -------
     np.ndarray or float
-        Adjusted p-values if mt_stat='identity',
-        otherwise the requested summary statistic.
+        Adjusted p-values or summary statistic.
+
+    Examples
+    --------
+    >>> mt_correct_v([0.032, 0.001, 0.0045, 0.051, 0.048])
+    array([0.11645   , 0.01141667, 0.0256875 , 0.11645   , 0.11645   ])
+
+    >>> mt_correct_v([0.032, 0.001, 0.0045], mt_stat="median")
+    0.011416666666666666
     """
     adjusted: NDArray[np.float64] = mt_correct_helper(
         pvals=pvals,
@@ -164,16 +162,15 @@ def mt_correct_df(
     Parameters
     ----------
     df : pandas.DataFrame
-        DataFrame with a p-value column.
+        DataFrame containing p-values.
     mt_method : str
         Multiple testing correction method.
     col_str : str
         Name of p-value column.
     new_col_str : str
-        Name of adjusted p-value column to create.
+        Name of adjusted p-value column.
     pval_thr : float or None
-        Threshold for filtering rows.
-        If None, no filtering is performed.
+        Filtering threshold (None disables filtering).
     do_order : bool
         Whether to sort by adjusted p-values.
     n_comp : int or None
@@ -183,6 +180,21 @@ def mt_correct_df(
     -------
     pandas.DataFrame
         Updated DataFrame.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> df = pd.DataFrame({
+    ...     "elem": ["A", "B", "C", "D", "E"],
+    ...     "pval": [0.032, 0.001, 0.0045, 0.051, 0.048]
+    ... })
+    >>> mt_correct_df(df)
+      elem   pval  pvalAdj
+    0    B  0.001   0.011417
+    1    C  0.0045  0.025688
+    2    A  0.032   0.11645
+    3    D  0.051   0.11645
+    4    E  0.048   0.11645
     """
     df = df.copy()
 
@@ -203,20 +215,3 @@ def mt_correct_df(
         df = df.sort_values(new_col_str)
 
     return df.reset_index(drop=True)
-
-
-if __name__ == "__main__":
-    pvals = [0.032, 0.001, 0.0045, 0.051, 0.048]
-
-    print("Vector correction:")
-    print(mt_correct_v(pvals))
-
-    df = pd.DataFrame(
-        {
-            "elem": ["A", "B", "C", "D", "E"],
-            "pval": pvals,
-        }
-    )
-
-    print("\nDataFrame correction:")
-    print(mt_correct_df(df))

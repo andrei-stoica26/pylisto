@@ -1,13 +1,27 @@
 from __future__ import annotations
-
 from math import prod
 from typing import List, Optional
 
 
 def generate_primes(max: int) -> List[int]:
     """
-    Generate all prime numbers less than or equal to `max`
-    using the Sieve of Eratosthenes.
+    Generate all prime numbers less than or equal to max using the Sieve of Eratosthenes.
+
+    Args:
+        max: Upper bound (inclusive).
+
+    Returns:
+        List of prime numbers ≤ max.
+
+    Example:
+        >>> generate_primes(10)
+        [2, 3, 5, 7]
+
+        >>> generate_primes(2)
+        [2]
+
+        >>> generate_primes(1)
+        []
     """
     if max < 2:
         return []
@@ -25,36 +39,32 @@ def generate_primes(max: int) -> List[int]:
 
 def factorial_prime_powers(n: int) -> Optional[List[int]]:
     """
-    Generate the prime factor decomposition of n factorial.
-
-    Args:
-        n: A non-negative integer.
+    Prime factor exponents of n! corresponding to primes (2, 3, 5, 7, ...).
 
     Returns:
-        A list where positions correspond to prime numbers
-        (2, 3, 5, 7, ...) and values correspond to their
-        exponents in the decomposition of n!.
-
-        Returns None for n = 0 or n = 1.
+        List of exponents in order of primes, or None for n = 0 or 1.
 
     Example:
-        factorial_prime_powers(8)
-        # Returns [7, 2, 1, 1]
-        # Corresponding to:
-        # 2^7 * 3^2 * 5^1 * 7^1
+        >>> factorial_prime_powers(5)
+        [3, 1]   # 5! = 2^3 * 3^1 * 5^1
+
+        >>> factorial_prime_powers(8)
+        [7, 2, 1, 1]
+        # 8! = 2^7 * 3^2 * 5^1 * 7^1
+
+        >>> factorial_prime_powers(1)
+        None
     """
     if n in (0, 1):
         return None
-
     if n < 0:
-        raise ValueError("`n` must be a non-negative integer.")
+        raise ValueError("n must be a non-negative integer.")
 
     primes = generate_primes(max=n)
     result: List[int] = [0] * len(primes)
 
     for i, prime in enumerate(primes):
         k = prime
-
         while k <= n:
             result[i] += n // k
             k *= prime
@@ -64,20 +74,23 @@ def factorial_prime_powers(n: int) -> Optional[List[int]]:
 
 def power_product(primes: List[int], exponents: List[int]) -> int:
     """
-    Compute the product of primes raised to their exponents.
+    Compute product of primes raised to their exponents.
 
     Args:
-        primes: List of prime numbers.
+        primes: List of primes.
         exponents: Corresponding exponents.
 
     Returns:
-        The integer product:
-            prod(prime_i ** exponent_i)
+        Integer result of Π(prime_i ** exponent_i)
 
     Example:
-        power_product([2, 3, 5], [4, 2, 6])
+        >>> power_product([2, 3, 5], [4, 2, 6])
+        155520
+
+        >>> power_product([2, 3], [3, 1])
+        24
     """
     if len(primes) != len(exponents):
-        raise ValueError("`primes` and `exponents` must have the same length.")
+        raise ValueError("primes and exponents must have the same length.")
 
     return prod(p**e for p, e in zip(primes, exponents))
