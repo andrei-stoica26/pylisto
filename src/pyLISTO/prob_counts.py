@@ -1,7 +1,11 @@
 from typing import List
 from vectors import v_sum, v_choose, v_numerator_mn
 from sympy import prime
-from .factor_decomposition import power_product
+from scipy.stats import hypergeom
+import numpy as np
+
+
+from factor_decomposition import power_product
 
 def prob_counts_2mn(
     int_mn: int,
@@ -46,3 +50,41 @@ def prob_counts_2mn(
     primes: List[int] = [prime(i) for i in range(1, len(exponents) + 1)]
 
     return power_product(primes, exponents)
+
+
+def prob_counts_3n(a: int, b: int, c: int, n: int, k: int) -> float:
+    """
+    Compute the probability that three subsets of given sizes intersect
+    in exactly k points.
+
+    Parameters
+    ----------
+    a : int
+        Size of the first subset.
+    b : int
+        Size of the second subset.
+    c : int
+        Size of the third subset.
+    n : int
+        Size of the universal set.
+    k : int
+        Size of the desired triple intersection.
+
+    Returns
+    -------
+    float
+        Probability in [0, 1] that the three subsets intersect in exactly k points.
+    """
+
+    lower = max(a + b - n, k)
+    upper = min(a, b, n + k - c)
+
+    if lower > upper:
+        return 0.0
+
+    x = np.arange(lower, upper + 1)
+
+    p_x = hypergeom.pmf(x, n, a, b)
+    p_k_given_x = hypergeom.pmf(k, n, x, c)
+
+    return np.sum(p_x * p_k_given_x)
