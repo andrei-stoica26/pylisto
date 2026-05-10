@@ -1,9 +1,7 @@
 from __future__ import annotations
 from math import prod
 from typing import List, Optional
-
-
-from .primes import generate_primes
+from sympy import primerange
 
 
 def factorial_prime_powers(n: int) -> Optional[List[int]]:
@@ -23,7 +21,7 @@ def factorial_prime_powers(n: int) -> Optional[List[int]]:
     if n < 0:
         raise ValueError("n must be a non-negative integer.")
 
-    primes = generate_primes(max=n)
+    primes = list(primerange(1, n))
     result: List[int] = [0] * len(primes)
 
     for i, prime in enumerate(primes):
