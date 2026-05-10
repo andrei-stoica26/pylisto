@@ -3,62 +3,6 @@ from typing import List, Optional
 from math import prod
 
 
-def generate_primes(max_n: int) -> List[int]:
-    """
-    Generate all prime numbers ≤ max_n using the Sieve of Eratosthenes.
-
-    Examples:
-        >>> generate_primes(10)
-        [2, 3, 5, 7]
-
-        >>> generate_primes(1)
-        []
-    """
-    if max_n < 2:
-        return []
-
-    sieve = [True] * (max_n + 1)
-    sieve[0] = sieve[1] = False
-
-    for i in range(2, int(max_n**0.5) + 1):
-        if sieve[i]:
-            for j in range(i * i, max_n + 1, i):
-                sieve[j] = False
-
-    return [i for i, ok in enumerate(sieve) if ok]
-
-
-def factorial_prime_powers(n: int) -> Optional[List[int]]:
-    """
-    Prime factor exponents of n! aligned with primes (2, 3, 5, 7, ...).
-
-    Examples:
-        >>> factorial_prime_powers(5)
-        [3, 1, 1]
-
-        >>> factorial_prime_powers(8)
-        [7, 2, 1, 1]
-
-        >>> factorial_prime_powers(1)
-        None
-    """
-    if n in (0, 1):
-        return None
-    if n < 0:
-        raise ValueError("n must be non-negative")
-
-    primes = generate_primes(n)
-    result = [0] * len(primes)
-
-    for i, p in enumerate(primes):
-        k = p
-        while k <= n:
-            result[i] += n // k
-            k *= p
-
-    return result
-
-
 def v_sum(*vectors: List[int]) -> List[int]:
     """
     Add numeric vectors of different lengths by zero-padding shorter ones.
