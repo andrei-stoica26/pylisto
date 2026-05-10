@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import List, Optional
 from math import prod
 
+from factor_decomposition import factorial_prime_powers
+
 
 def v_sum(*vectors: List[int]) -> List[int]:
     """

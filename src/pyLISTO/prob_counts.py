@@ -1,5 +1,6 @@
 from typing import List
-from .vectors import v_sum, v_choose, v_numerator_mn
+from vectors import v_sum, v_choose, v_numerator_mn
+from sympy import prime
 from .factor_decomposition import power_product
 
 def prob_counts_2mn(
@@ -30,6 +31,11 @@ def prob_counts_2mn(
     -------
     float
         Probability that two subsets of sets M and N intersect in k points.
+
+    Example
+        >>> prob_counts_2mn(8, 6, 4, 2)
+        30
+
     """
 
     exponents: List[int] = v_sum(
