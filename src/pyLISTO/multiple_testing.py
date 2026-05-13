@@ -40,7 +40,7 @@ def mt_correct_helper(
         pvals:
             Numeric vector of p-values.
         mt_method:
-            Multiple testing method.
+            Multiple testing correction method.
         n_comp:
             Number of comparisons.
 

@@ -1,8 +1,12 @@
 from typing import Any, Callable, Iterable, Optional, Literal, Union, List
 import pandas as pd
+import operator
+from multiprocessing import Pool
 
 
 from pval_sets import pval_sets_2n, pval_sets_2mn, pval_sets_3n
+from checks import check_num_col_all
+from cutoffs import generate_cutoffs
 
 
 def filter_items(
@@ -43,11 +47,9 @@ def filter_items(
         KeyError:
             If `num_col` is not found in the DataFrame.
     """
-    # Case 1: list of strings -> no filtering
     if isinstance(obj, list):
         return obj
 
-    # Case 2: DataFrame filtering
     if num_col is None:
         raise ValueError("`num_col` must be provided when obj is a DataFrame.")
 
@@ -107,11 +109,9 @@ def pval_objects_core(
             If required arguments for a given `type` are missing.
     """
 
-    # Filter objects
     names1 = filter_items(obj1, num_col=num_col, cutoff=cutoff, comp_fun=comp_fun)
     names2 = filter_items(obj2, num_col=num_col, cutoff=cutoff, comp_fun=comp_fun)
 
-    # Ensure outputs are lists of strings
     names1 = list(names1)
     names2 = list(names2)
 
@@ -133,3 +133,118 @@ def pval_objects_core(
         return pval_sets_3n(names1, names2, names3, universe1)
 
     raise ValueError("Unsupported type provided.")
+
+
+def pval_objects(
+    obj1: Any,
+    obj2: Any,
+    obj3: Optional[Any] = None,
+    universe1: Sequence[Any] = None,
+    universe2: Optional[Sequence[Any]] = None,
+    num_col: Optional[str] = None,
+    is_high_top: bool = True,
+    max_cutoffs: int = 5000,
+    mt_method: Literal[
+        "BY",
+        "holm",
+        "hochberg",
+        "hommel",
+        "bonferroni",
+        "BH",
+        "fdr",
+        "none",
+    ] = "BY",
+    n_cores: int = 1,
+    type: Literal["2N", "2MN", "3N"] = "2N",
+) -> float:
+    """
+    Assess the statistical significance of the overlap of two or three objects.
+
+    This function assesses the statistical significance of the overlap of two
+    or three objects (character vectors, or data frames having a numeric column).
+
+    Args:
+        obj1:
+            First object to compare. Can be a character vector or a data frame
+            containing a numeric column.
+        obj2:
+            Second object to compare. Can be a character vector or a data frame
+            containing a numeric column.
+        obj3:
+            Optional third object for three-set overlap assessment.
+        universe1:
+            Universe associated with the first object (and second if using the
+            same universe).
+        universe2:
+            Optional second universe when assessing overlap between sets
+            belonging to different universes.
+        num_col:
+            Name of the numeric column if input objects are data frames.
+        is_high_top:
+            If True, higher values are considered top-ranked (`>` comparison).
+            If False, lower values are considered top-ranked (`<` comparison).
+        max_cutoffs:
+            Maximum number of cutoffs to generate for overlap testing.
+        mt_method:
+            Multiple testing correction method.
+        n_cores:
+            Number of cores to use for parallel computation. For overlap
+            assessments between sets belonging to the same universe ("2N"),
+            parallelization is generally not recommended.
+        type:
+            Type of overlap assessment. One of:
+            - "2N": two sets belonging to the same universe
+            - "2MN": two sets belonging to different universes
+            - "3N": three sets belonging to the same universe
+
+    Returns:
+        A numeric value in [0, 1] representing the p-value of the overlap
+        of the provided objects.
+    """
+    check_num_col_all([obj1, obj2, obj3], num_col)
+
+    cutoffs = generate_cutoffs(
+        obj1=obj1,
+        obj2=obj2,
+        obj3=obj3,
+        num_col=num_col,
+        is_high_top=is_high_top,
+        max_cutoffs=max_cutoffs,
+    )
+
+    comp_fun: Callable[[Any, Any], bool] = (
+        operator.gt if is_high_top else operator.lt
+    )
+
+    def _compute_pval(cutoff: Union[int, float]) -> float:
+        return pval_objects_core(
+            obj1=obj1,
+            obj2=obj2,
+            obj3=obj3,
+            universe1=universe1,
+            universe2=universe2,
+            num_col=num_col,
+            cutoff=cutoff,
+            comp_fun=comp_fun,
+            type=type,
+        )
+
+    if n_cores == 1:
+        pvals: List[float] = [_compute_pval(cutoff) for cutoff in cutoffs]
+    else:
+        if type == "2N":
+            print(
+                "Warning: Parallelization is not recommended for 2N overlap "
+                "assessments. Consider setting `n_cores` back to 1."
+            )
+
+        with Pool(processes=n_cores) as pool:
+            pvals = pool.map(_compute_pval, cutoffs)
+
+    pval: float = mt_correct_v(
+        pvals=pvals,
+        mt_method=mt_method,
+        mt_statd="median",
+    )
+
+    return pval
