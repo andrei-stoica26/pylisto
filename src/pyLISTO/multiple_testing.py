@@ -15,16 +15,13 @@ def bf_correct_v(
     """
     Perform Bonferroni correction on a vector of p-values.
 
-    Parameters
-    ----------
-    pvals : array-like
-        Numeric vector of p-values.
-    n_comp : int
-        Number of comparisons.
+    Args:
+        pvals:
+            Numeric vector of p-values.
+        n_comp:
+            Number of comparisons.
 
-    Returns
-    -------
-    np.ndarray
+    Returns:
         Bonferroni-adjusted p-values.
     """
     pvals_array: NDArray[np.float64] = np.asarray(pvals, dtype=float)
@@ -39,18 +36,15 @@ def mt_correct_helper(
     """
     Helper function for multiple comparison testing.
 
-    Parameters
-    ----------
-    pvals : array-like
-        Numeric vector of p-values.
-    mt_method : str
-        Multiple testing method.
-    n_comp : int or None
-        Number of comparisons.
+    Args:
+        pvals:
+            Numeric vector of p-values.
+        mt_method:
+            Multiple testing method.
+        n_comp:
+            Number of comparisons.
 
-    Returns
-    -------
-    np.ndarray
+    Returns:
         Adjusted p-values.
     """
     pvals_array: NDArray[np.float64] = np.asarray(pvals, dtype=float)
@@ -99,30 +93,22 @@ def mt_correct_v(
     """
     Perform multiple testing correction on a vector of p-values.
 
-    Parameters
-    ----------
-    pvals : array-like
-        Numeric vector of p-values.
-    mt_method : str
-        Multiple testing correction method.
-    mt_stat : str
-        Summary statistic to return:
-        'identity', 'median', 'mean', 'max', 'min'
-    n_comp : int or None
-        Number of comparisons.
+    Args:
+        pvals:
+            Numeric vector of p-values.
+        mt_method:
+            Multiple testing correction method.
+        mt_stat:
+            Summary statistic to return: 'identity', 'median', 'mean', 
+            'max' or 'min'
+        n_comp:
+            Number of comparisons.
 
-    Returns
-    -------
-    np.ndarray or float
+    Returns:
         Adjusted p-values or summary statistic.
 
-    Examples
-    --------
-    >>> mt_correct_v([0.032, 0.001, 0.0045, 0.051, 0.048])
-    array([0.11645   , 0.01141667, 0.0256875 , 0.11645   , 0.11645   ])
-
-    >>> mt_correct_v([0.032, 0.001, 0.0045], mt_stat="median")
-    0.011416666666666666
+    Example:
+        >>> mt_correct_v([0.032, 0.001, 0.0045, 0.051, 0.048])
     """
     adjusted: NDArray[np.float64] = mt_correct_helper(
         pvals=pvals,
@@ -159,42 +145,32 @@ def mt_correct_df(
     """
     Perform multiple testing correction on a DataFrame column.
 
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        DataFrame containing p-values.
-    mt_method : str
-        Multiple testing correction method.
-    col_str : str
-        Name of p-value column.
-    new_col_str : str
-        Name of adjusted p-value column.
-    pval_thr : float or None
-        Filtering threshold (None disables filtering).
-    do_order : bool
-        Whether to sort by adjusted p-values.
-    n_comp : int or None
-        Number of comparisons.
+    Args:
+        df:
+            DataFrame containing p-values.
+        mt_method:
+            Multiple testing correction method.
+        col_str:
+            Name of p-value column.
+        new_col_str:
+            Name of adjusted p-value column.
+        pval_thr:
+            Filtering threshold (None disables filtering).
+        do_order:
+            Whether to sort by adjusted p-values.
+        n_comp:
+            Number of comparisons.
 
-    Returns
-    -------
-    pandas.DataFrame
+    Returns:
         Updated DataFrame.
 
-    Examples
-    --------
-    >>> import pandas as pd
-    >>> df = pd.DataFrame({
-    ...     "elem": ["A", "B", "C", "D", "E"],
-    ...     "pval": [0.032, 0.001, 0.0045, 0.051, 0.048]
-    ... })
-    >>> mt_correct_df(df)
-      elem   pval  pvalAdj
-    0    B  0.001   0.011417
-    1    C  0.0045  0.025688
-    2    A  0.032   0.11645
-    3    D  0.051   0.11645
-    4    E  0.048   0.11645
+    Example:
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({
+        ...     "elem": ["A", "B", "C", "D", "E"],
+        ...     "pval": [0.032, 0.001, 0.0045, 0.051, 0.048]
+        ... })
+        >>> mt_correct_df(df)
     """
     df = df.copy()
 

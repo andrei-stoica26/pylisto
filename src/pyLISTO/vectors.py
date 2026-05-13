@@ -9,12 +9,17 @@ def v_sum(*vectors: List[int]) -> List[int]:
     """
     Add numeric vectors of different lengths by zero-padding shorter ones.
 
-    Examples:
-        >>> v_sum([1, 4], [2, 8, 6])
-        [3, 12, 6]
+    Args:
+        vectors:
+            Variable number of integer lists representing vectors.
 
-        >>> v_sum([1, 7], [10, 4, 6, 7])
-        [11, 11, 6, 7]
+    Returns:
+        A list of integers representing the element-wise sum of all input
+        vectors, after zero-padding to equal length.
+
+    Example:
+    
+        >>> v_sum([1, 4], [2, 8, 6])
     """
     if not vectors:
         return []
@@ -38,12 +43,20 @@ def v_choose(n: int, k: int) -> List[int]:
     """
     Prime factor decomposition of binomial coefficient C(n, k).
 
-    Examples:
-        >>> v_choose(5, 2)
-        [1, 0, 1]
+    Args:
+        n:
+            Total number of elements.
+        k:
+            Number of selected elements.
 
+    Returns:
+        A vector in which positions represent prime numbers (that is, the
+        first position corresponds to 2, the second position corresponds to 3,
+        the third position corresponds to 5, etc.) and values
+        represent their exponents in the factorial decomposition.
+
+    Examples:
         >>> v_choose(8, 4)
-        [1, 0, 1, 1]
     """
     fn = factorial_prime_powers(n) or []
     fk = factorial_prime_powers(k) or []
@@ -55,13 +68,28 @@ def v_choose(n: int, k: int) -> List[int]:
     return v_sum(fn, fk, fnk)
 
 
-def v_numerator_mn(intMN: int, intAN: int, intBM: int, k: int) -> List[int]:
+def v_numerator_mn(int_mn: int, int_an: int, int_bm: int, k: int) -> List[int]:
     """
     Prime representation of numerator for intersection probability expression.
 
-    Examples:
+    Args:
+        int_mn:
+            Number of elements in the intersection of sets M and N.
+        int_an:
+            Number of elements in the intersection of sets A (subset of M) and N.
+        int_bm:
+            Number of elements in the intersection of sets B (subset of N) and M.
+        k:
+            Number of elements in the intersection of sets A and B.
+    
+    Returns:
+        A vector containing the prime representation of the fraction representing 
+        the probability that two subsets of sets M and N intersect in k points. 
+        Positions represent prime numbers in order (2, 3, 5...), and values
+        represent their exponents in the prime decomposition.
+        
+    Example:
         >>> v_numerator_mn(8, 4, 3, 1)
-        [1, 1, 0, 0]
     """
     a = v_choose(intAN, k)
     b = v_choose(intMN - intAN, intBM - k)

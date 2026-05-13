@@ -10,6 +10,12 @@ def check_num_col(
     Valid inputs:
     - pandas DataFrame
     - list of character strings
+
+    Args:
+        obj:
+            A pandas DataFrames with a numeric column or a list of character strings.
+        num_col:
+            Name of the numeric column.
     """
 
     if isinstance(obj, pd.DataFrame):
@@ -31,19 +37,17 @@ def check_num_col_all(
     """
     Check if num_col is valid input for a list of objects.
 
-    Parameters
-    ----------
-    objs : list[pd.DataFrame] | list[list[str]]
-        A list containing either:
-        - pandas DataFrames with a numeric column, or
-        - lists of character strings.
-    num_col : str
-        Name of the numeric column to validate.
+    Args:
+        objs:
+            A list containing either:
+            - pandas DataFrames with a numeric column, or
+            - lists of character strings.
+        num_col:
+            Name of the numeric column to validate.
 
-    Raises
-    ------
-    ValueError
-        If any DataFrame fails validation.
+    Raises:
+        ValueError:
+            If any DataFrame fails validation.
     """
     for obj in objs:
         check_num_col(obj, num_col)
