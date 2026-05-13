@@ -17,29 +17,25 @@ def pval_sets_2n(
     current overlap between two subsets using the hypergeometric
     distribution.
 
-    Parameters
-    ----------
-    a : list[str]
-        First subset.
-    b : list[str]
-        Second subset.
-    n : list[str]
-        Set from which `a` and `b` are selected.
+    Args:
+        a: 
+            First subset.
+        b: 
+            Second subset.
+        n: 
+            Set from which `a` and `b` are selected.
 
-    Returns
-    -------
-    float
+    Returns: 
         A numeric value in [0, 1] representing the p-value of
         intersection for two sets.
 
 
-    Examples
-    --------
-    >>> pval_sets_2n(
-    ...     ["D", "E", "F", "G", "H", "I", "J"],
-    ...     ["G", "H", "I", "J", "K", "L", "M", "N", "O"],
-    ...     list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-    ... )
+    Example:
+        >>> pval_sets_2n(
+        ...     ["D", "E", "F", "G", "H", "I", "J"],
+        ...     ["G", "H", "I", "J", "K", "L", "M", "N", "O"],
+        ...     list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        ... )
     """
     na: int = len(a)
     nb: int = len(b)

@@ -20,25 +20,21 @@ def prob_counts_2mn(
     intersect in exactly k points. The required intersection sizes
     (M ∩ N, A ∩ N, and B ∩ M) must be provided.
 
-    Parameters
-    ----------
-    int_mn : int
-        Size of the intersection between sets M and N.
-    int_an : int
-        Size of the intersection between sets A and N.
-    int_bm : int
-        Size of the intersection between sets B and M.
-    k : int
-        Desired intersection size.
+    Args:
+        int_mn:
+            Size of the intersection between sets M and N.
+        int_an:
+            Size of the intersection between sets A and N.
+        int_bm:
+            Size of the intersection between sets B and M.
+        k:
+            Desired intersection size.
 
-    Returns
-    -------
-    float
+    Returns:
         Probability that two subsets of sets M and N intersect in k points.
 
-    Example
+    Example:
         >>> prob_counts_2mn(8, 6, 4, 2)
-        30
 
     """
 
@@ -57,23 +53,23 @@ def prob_counts_3n(a: int, b: int, c: int, n: int, k: int) -> float:
     Compute the probability that three subsets of given sizes intersect
     in exactly k points.
 
-    Parameters
-    ----------
-    a : int
-        Size of the first subset.
-    b : int
-        Size of the second subset.
-    c : int
-        Size of the third subset.
-    n : int
-        Size of the universal set.
-    k : int
-        Size of the desired triple intersection.
+    Args:
+        a:
+            Size of the first subset.
+        b:
+            Size of the second subset.
+        c:
+            Size of the third subset.
+        n:
+            Size of the universal set.
+        k:
+            Size of the desired triple intersection.
 
-    Returns
-    -------
-    float
+    Returns:
         Probability in [0, 1] that the three subsets intersect in exactly k points.
+
+    Example:
+        >>> prob_counts_3n(8, 6, 10, 20, 3)
     """
 
     lower = max(a + b - n, k)
