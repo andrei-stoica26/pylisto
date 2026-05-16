@@ -1,11 +1,12 @@
 from typing import List
-from vectors import v_sum, v_choose, v_numerator_mn
 from sympy import prime
 from scipy.stats import hypergeom
 import numpy as np
 
 
-from factor_decomposition import power_product
+from .vectors import v_sum, v_choose, v_numerator_mn
+from .factor_decomposition import power_product
+
 
 def prob_counts_2mn(
     int_mn: int,

@@ -4,9 +4,10 @@ import operator
 from multiprocessing import Pool
 
 
-from pval_sets import pval_sets_2n, pval_sets_2mn, pval_sets_3n
-from checks import check_num_col_all
-from cutoffs import generate_cutoffs
+from .pval_sets import pval_sets_2n, pval_sets_2mn, pval_sets_3n
+from .checks import check_num_col_all
+from .cutoffs import generate_cutoffs
+from .multiple_testing import mt_correct_v
 
 
 def filter_items(

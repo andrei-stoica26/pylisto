@@ -1,2 +1,4 @@
+dist/
 src/pyLISTO/__pycache__
 src/pyLISTO/.test_code.py
+commands.txt

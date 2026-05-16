@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List, Optional
 from math import prod
 
-from factor_decomposition import factorial_prime_powers
+from .factor_decomposition import factorial_prime_powers
 
 
 def v_sum(*vectors: List[int]) -> List[int]:
@@ -91,6 +91,6 @@ def v_numerator_mn(int_mn: int, int_an: int, int_bm: int, k: int) -> List[int]:
     Example:
         >>> v_numerator_mn(8, 4, 3, 1)
     """
-    a = v_choose(intAN, k)
-    b = v_choose(intMN - intAN, intBM - k)
+    a = v_choose(int_an, k)
+    b = v_choose(int_mn - int_an, int_bm - k)
     return v_sum(a, b)

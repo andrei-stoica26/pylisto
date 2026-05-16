@@ -3,8 +3,8 @@ import warnings
 import pandas as pd
 
 
-from pval_objects import pval_objects
-from multiple_testing import mt_correct_df
+from .pval_objects import pval_objects
+from .multiple_testing import mt_correct_df
 
 
 def run_listo(

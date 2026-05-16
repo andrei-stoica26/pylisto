@@ -2,7 +2,7 @@ from scipy.stats import hypergeom
 from typing import List
 
 
-from pval_counts import pval_counts_2mn, pval_counts_3n
+from .pval_counts import pval_counts_2mn, pval_counts_3n
 
 
 def pval_sets_2n(
