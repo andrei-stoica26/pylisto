@@ -1,5 +1,17 @@
+import pandas as pd
 import pylisto as pyl
 import pytest
+from string import ascii_uppercase
+
+def test_get_object_values():
+    df = pd.DataFrame({
+        "fruit": ["apple", "banana", "cherry"],
+        "cost": [6, 5, 3]
+    })
+    letters = list(ascii_uppercase)
+    assert list(pyl.cutoffs.get_object_values(df, "cost")) == [6, 5, 3]
+    assert pyl.cutoffs.get_object_values(df, None) == float("-inf")
+    assert pyl.cutoffs.get_object_values(letters, "cost", False) == float("inf")
 
 def test_factorization_functions():
     assert pyl.factorial_prime_powers(8) == [7, 2, 1, 1]
@@ -28,5 +40,12 @@ def test_prob_counts_3n():
 def test_pval_counts_functions():
     res = pyl.pval_counts_2mn(300, 23, 24, 6)
     assert res == pytest.approx(0.005571074, rel=1e-4, abs=1e-4)
+
     res = pyl.pval_counts_3n(300, 200, 250, 400, 180)
     assert res == pytest.approx(5.101079e-62, rel=1e-4, abs=1e-4)
+
+#def test_pval_objects():
+    #letters = list(ascii_uppercase)
+    #res = pyl.pval_objects(letters[2:8], letters[3:20], universe1=letters)
+
+test_get_object_values()
