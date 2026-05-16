@@ -38,10 +38,10 @@ def prob_counts_2mn(
         >>> prob_counts_2mn(8, 6, 4, 2)
 
     """
-
+    denom = v_choose(int_mn, int_bm)
     exponents: List[int] = v_sum(
         v_numerator_mn(int_mn, int_an, int_bm, k),
-        -1 * v_choose(int_mn, int_bm)
+        [-x for x in denom]
     )
 
     primes: List[int] = [prime(i) for i in range(1, len(exponents) + 1)]

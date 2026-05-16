@@ -24,7 +24,7 @@ def factorial_prime_powers(n: int) -> Optional[List[int]]:
     if n < 0:
         raise ValueError("n must be a non-negative integer.")
 
-    primes = list(primerange(1, n))
+    primes = list(primerange(n + 1))
     result: List[int] = [0] * len(primes)
 
     for i, prime in enumerate(primes):
