@@ -25,13 +25,8 @@ def test_prob_counts_3n():
     )
     assert res == pytest.approx(1, rel=1e-4, abs=1e-4)
 
-
-res = pyl.prob_counts_3n(25, 20, 30, 140, 8)
-print(res)
-
-res = sum(
-        pyl.prob_counts_3n(25, 20, 30, 140, i)
-        for i in range(0, 21)
-    )
-
-print(res)
+def test_pval_counts_functions():
+    res = pyl.pval_counts_2mn(300, 23, 24, 6)
+    assert res == pytest.approx(0.005571074, rel=1e-4, abs=1e-4)
+    res = pyl.pval_counts_3n(300, 200, 250, 400, 180)
+    assert res == pytest.approx(5.101079e-62, rel=1e-4, abs=1e-4)

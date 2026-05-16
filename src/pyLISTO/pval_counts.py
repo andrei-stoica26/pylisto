@@ -3,7 +3,7 @@ from sympy import prime
 
 from .factor_decomposition import power_product
 from .vectors import v_sum, v_choose, v_numerator_mn
-
+from .prob_counts import prob_counts_3n
 
 def pval_counts_2mn(
     int_mn: int,
@@ -31,7 +31,8 @@ def pval_counts_2mn(
     Example:
        >>>  pval_counts_2mn (300, 23, 24, 6)
     """
-    denom = -1 * v_choose(int_mn, int_bm)
+    combs: List[int] = v_choose(int_mn, int_bm)
+    denom: List[int] = [-x for x in combs]
     pval: float = 0.0
 
     for i in range(k, min(int_an, int_bm) + 1):
