@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pylisto as pyl
 import pytest
@@ -9,9 +10,24 @@ def test_get_object_values():
         "cost": [6, 5, 3]
     })
     letters = list(ascii_uppercase)
-    assert list(pyl.cutoffs.get_object_values(df, "cost")) == [6, 5, 3]
+    assert pyl.cutoffs.get_object_values(df, "cost") == [6, 5, 3]
     assert pyl.cutoffs.get_object_values(df, None) == float("-inf")
     assert pyl.cutoffs.get_object_values(letters, "cost", False) == float("inf")
+
+def test_generate_cutoffs():
+    df1 = pd.DataFrame({
+        "fruit": ["apple", "banana", "cherry", "plum", "orange"],
+        "cost": [6, 5, 3, 4, 5]
+    })
+    df2 = pd.DataFrame({
+        "fruit": ["watermelon", "grape", "banana", "apricot", "melon"],
+        "cost": [8, 1, 4, 3, 6]
+    })
+    res = pyl.cutoffs.generate_cutoffs(df1, df2, num_col="cost")
+    assert list(res) == [5, 4, 3, 1, -np.inf]
+
+    v1 = ["banana", "apple", "sour cherry", "lemon", "pineapple"]
+    
 
 def test_factorization_functions():
     assert pyl.factorial_prime_powers(8) == [7, 2, 1, 1]
@@ -48,4 +64,12 @@ def test_pval_counts_functions():
     #letters = list(ascii_uppercase)
     #res = pyl.pval_objects(letters[2:8], letters[3:20], universe1=letters)
 
-test_get_object_values()
+df1 = pd.DataFrame({
+        "fruit": ["apple", "banana", "cherry", "plum", "orange"],
+        "cost": [6, 5, 3, 4, 5]
+    })
+
+v1 = ["banana", "apple", "sour cherry", "lemon", "pineapple"]
+
+res = pyl.cutoffs.generate_cutoffs(df1, v1, num_col="cost")
+print(res)

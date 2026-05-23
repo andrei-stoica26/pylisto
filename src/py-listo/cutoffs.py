@@ -13,7 +13,7 @@ def get_object_values(
     obj: ObjectType,
     num_col: Optional[str] = None,
     is_high_top: bool = True,
-) -> Union[np.ndarray, float]:
+) -> list[float]:
     """
     Extract numeric values from an input object.
 
@@ -27,13 +27,13 @@ def get_object_values(
             better-ranked items.
 
     Returns:
-        A NumPy array of numeric values, or +/- infinity for string-list
+        A list of numeric values, or +/- infinity for string-list
         inputs or when `num_col` is None.
     """
     if num_col is None or isinstance(obj, list):
-        return -np.inf if is_high_top else np.inf
+        return [-np.inf] if is_high_top else [np.inf]
 
-    return obj[num_col].to_numpy()
+    return list(obj[num_col])
 
 
 def generate_cutoffs(
@@ -71,10 +71,10 @@ def generate_cutoffs(
 
     if obj3 is None:
         values3 = values2
-        cutoffs = np.unique(np.concatenate([values1, values2]))
+        cutoffs = np.unique(values1 + values2)
     else:
         values3 = get_object_values(obj3, num_col, is_high_top)
-        cutoffs = np.unique(np.concatenate([values1, values2, values3]))
+        cutoffs = np.unique(values1 + values2 + values3)
 
     if is_high_top:
         bound = min(np.max(values1), np.max(values2), np.max(values3))
@@ -83,13 +83,12 @@ def generate_cutoffs(
         bound = max(np.min(values1), np.min(values2), np.min(values3))
         cutoffs = cutoffs[cutoffs > bound]
 
-    cutoffs = np.sort(cutoffs)
+    extra_cutoff = -np.inf if is_high_top else np.inf
+    cutoffs = np.append(cutoffs, extra_cutoff)
 
+    cutoffs = np.unique(cutoffs)
     if is_high_top:
         cutoffs = cutoffs[::-1]
-
-    extra_cutoff = -np.inf if is_high_top else np.inf
-    cutoffs = np.unique(np.append(cutoffs, extra_cutoff))
 
     n_cutoffs = len(cutoffs)
 
