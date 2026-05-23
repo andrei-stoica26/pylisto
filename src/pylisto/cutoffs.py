@@ -10,96 +10,77 @@ ObjectType = Union[pd.DataFrame, list[str]]
 
 
 def get_object_values(
-    obj: ObjectType,
-    num_col: Optional[str] = None,
-    is_high_top: bool = True,
-) -> list[float]:
+    obj: pd.DataFrame | list[str] | None,
+    num_col: str | None,
+) -> pd.Series | list[float]:
     """
     Extract numeric values from an input object.
 
+    If ``obj`` is ``None``, ``num_col`` is ``None``, or ``obj`` is a list of
+    strings, returns ``[-inf, inf]``. Otherwise, returns the specified column
+    from the DataFrame.
+
     Args:
-        obj:
-            A pandas DataFrame with a numeric column or a list of strings.
-        num_col:
-            The name of the numeric column used for DataFrame ordering.
-        is_high_top:
-            Whether higher values in the numeric column correspond to
-            better-ranked items.
+        obj: A pandas DataFrame containing a numeric column, a list of strings,
+            or ``None``.
+        num_col: Name of the numeric column to extract.
 
     Returns:
-        A list of numeric values, or +/- infinity for string-list
-        inputs or when `num_col` is None.
+        The values from ``obj[num_col]`` if a valid DataFrame and column name
+        are provided; otherwise ``[-inf, inf]``.
     """
-    if num_col is None or isinstance(obj, list):
-        return [-np.inf] if is_high_top else [np.inf]
+    if obj is None or num_col is None or isinstance(obj, list):
+        return [float("-inf"), float("inf")]
 
-    return list(obj[num_col])
+    return obj[num_col]
 
 
 def generate_cutoffs(
-    obj1: ObjectType,
-    obj2: ObjectType,
-    obj3: Optional[ObjectType] = None,
-    num_col: Optional[str] = None,
+    obj1: pd.DataFrame | list[str] | None,
+    obj2: pd.DataFrame | list[str] | None,
+    obj3: pd.DataFrame | list[str] | None = None,
+    num_col: str | None = None,
     is_high_top: bool = True,
-    max_cutoffs: int = 5000,
+    max_cutoffs: int = 500,
 ) -> np.ndarray:
     """
     Generate cutoffs for filtering overlaps.
 
     Args:
-        obj1:
-            A pandas DataFrame with a numeric column or a list of strings.
-        obj2:
-            A pandas DataFrame with a numeric column or a list of strings.
-        obj3:
-            An optional pandas DataFrame with a numeric column or a list
-            of strings.
-        num_col:
-            The name of the numeric column used for DataFrame ordering.
-        is_high_top:
-            Whether higher values in the numeric column correspond to
-            better-ranked items.
-        max_cutoffs:
-            Maximum number of cutoffs.
+        obj1: A DataFrame containing a numeric column, a list of strings,
+            or ``None``.
+        obj2: A DataFrame containing a numeric column, a list of strings,
+            or ``None``.
+        obj3: A DataFrame containing a numeric column, a list of strings,
+            or ``None``.
+        num_col: Name of the numeric column used to generate cutoffs.
+        is_high_top: Whether higher numeric values correspond to better-ranked
+            items.
+        max_cutoffs: Maximum number of cutoffs to return. If more cutoffs are
+            generated, a linearly spaced subset is selected.
 
     Returns:
         A NumPy array of cutoff values.
     """
-    values1 = get_object_values(obj1, num_col, is_high_top)
-    values2 = get_object_values(obj2, num_col, is_high_top)
+    values1 = np.asarray(get_object_values(obj1, num_col))
+    values2 = np.asarray(get_object_values(obj2, num_col))
+    values3 = np.asarray(get_object_values(obj3, num_col))
 
-    if obj3 is None:
-        values3 = values2
-        cutoffs = np.unique(values1 + values2)
-    else:
-        values3 = get_object_values(obj3, num_col, is_high_top)
-        cutoffs = np.unique(values1 + values2 + values3)
+    cutoffs = np.unique(np.concatenate([values1, values2, values3]))
 
     if is_high_top:
-        bound = min(np.max(values1), np.max(values2), np.max(values3))
+        bound = min(values1.max(), values2.max(), values3.max())
         cutoffs = cutoffs[cutoffs < bound]
     else:
-        bound = max(np.min(values1), np.min(values2), np.min(values3))
+        bound = max(values1.min(), values2.min(), values3.min())
         cutoffs = cutoffs[cutoffs > bound]
 
-    extra_cutoff = -np.inf if is_high_top else np.inf
-    cutoffs = np.append(cutoffs, extra_cutoff)
-
-    cutoffs = np.unique(cutoffs)
+    cutoffs = np.sort(cutoffs)
     if is_high_top:
         cutoffs = cutoffs[::-1]
 
     n_cutoffs = len(cutoffs)
-
     if n_cutoffs > max_cutoffs:
-        print(
-            f"{n_cutoffs} cutoffs found in the input data frames. "
-            f"Only {max_cutoffs} will be used. "
-            "To change this behavior, set a higher value to "
-            "`max_cutoffs`."
-        )
-
         indices = np.linspace(
             0,
             n_cutoffs - 1,

@@ -63,13 +63,3 @@ def test_pval_counts_functions():
 #def test_pval_objects():
     #letters = list(ascii_uppercase)
     #res = pyl.pval_objects(letters[2:8], letters[3:20], universe1=letters)
-
-df1 = pd.DataFrame({
-        "fruit": ["apple", "banana", "cherry", "plum", "orange"],
-        "cost": [6, 5, 3, 4, 5]
-    })
-
-v1 = ["banana", "apple", "sour cherry", "lemon", "pineapple"]
-
-res = pyl.cutoffs.generate_cutoffs(df1, v1, num_col="cost")
-print(res)

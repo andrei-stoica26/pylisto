@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pylisto"
-version = "0.0.18"
+version = "0.0.19"
 authors = [
   { name="Andrei-Florian Stoica", email="andreistoica@foxmail.com" },
 ]
