@@ -1,6 +1,6 @@
 dist/
 .pytest_cache/
-src/pylisto/__pycache__
+src/pylisto/__pycache__/
 src/pylisto/.test_code.py
-src/tests/__pycache__
+tests/__pycache__/
 commands.txt
