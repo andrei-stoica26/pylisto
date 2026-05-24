@@ -3,7 +3,7 @@ import pylisto as pyl
 import pytest
 from string import ascii_uppercase
 
-def test_get_object_values():
+def test_get_object_values_works():
     df = pd.DataFrame({
         "fruit": ["apple", "banana", "cherry"],
         "cost": [6, 5, 3]
@@ -13,7 +13,7 @@ def test_get_object_values():
     assert pyl.cutoffs.get_object_values(df, None) == [float("-inf"), float("inf")]
     assert pyl.cutoffs.get_object_values(letters, "cost") == [float("-inf"), float("inf")]
 
-def test_generate_cutoffs():
+def test_generate_cutoffs_works():
     df1 = pd.DataFrame({
         "fruit": ["apple", "banana", "cherry", "plum", "orange"],
         "cost": [6, 5, 3, 4, 5]

@@ -2,7 +2,7 @@ import pylisto as pyl
 import pytest
 
 
-def test_vector_functions_work():
+def test_vector_functions():
     res = pyl.v_sum(
         [1, 4],
         [2, 8, 6],

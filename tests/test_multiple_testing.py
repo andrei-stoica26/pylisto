@@ -3,7 +3,7 @@ import pytest
 import pylisto as pyl
 
 
-def test_multiple_testing_functions_work():
+def test_multiple_testing_functions():
     pvals = [0.032, 0.001, 0.0045, 0.051, 0.048, 0.33]
 
     res = pyl.mt_correct_v(pvals)
