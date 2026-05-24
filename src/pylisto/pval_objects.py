@@ -145,16 +145,19 @@ def pval_objects(
     num_col: Optional[str] = None,
     is_high_top: bool = True,
     max_cutoffs: int = 5000,
-    mt_method: Literal[
-        "BY",
-        "holm",
-        "hochberg",
-        "hommel",
+   
+    mt_method: Literal [
+        "fdr_by",
         "bonferroni",
-        "BH",
-        "fdr",
-        "none",
-    ] = "BY",
+        "sidak",
+        "holm-sidak",
+        "holm",
+        "simes-hochberg",
+        "hommel",
+        "fdr_bh",
+        "fdr_tsbh",
+        "fdr_tsbky",
+    ] = "fdr_by",
     n_cores: int = 1,
     type: Literal["2N", "2MN", "3N"] = "2N",
 ) -> float:
@@ -245,7 +248,7 @@ def pval_objects(
     pval: float = mt_correct_v(
         pvals=pvals,
         mt_method=mt_method,
-        mt_statd="median",
+        mt_stat="median",
     )
 
     return pval

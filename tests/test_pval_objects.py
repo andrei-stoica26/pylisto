@@ -1,17 +1,32 @@
-import numpy as np
-import pandas as pd
-import pylisto as pyl
 import pytest
+import pylisto as pyl
 from string import ascii_uppercase
-    
 
-def test_pval_counts_functions():
-    res = pyl.pval_counts_2mn(300, 23, 24, 6)
-    assert res == pytest.approx(0.005571074, rel=1e-4, abs=1e-4)
 
-    res = pyl.pval_counts_3n(300, 200, 250, 400, 180)
-    assert res == pytest.approx(5.101079e-62, rel=1e-4, abs=1e-4)
+def test_pval_objects():
+    letters = list(ascii_uppercase)
 
-#def test_pval_objects():
-    #letters = list(ascii_uppercase)
-    #res = pyl.pval_objects(letters[2:8], letters[3:20], universe1=letters)
+    res = pyl.pval_objects(
+        letters[1:7],
+        letters[2:19],
+        universe1=letters,
+    )
+    assert res == pytest.approx(0.2956522, abs=1e-4)
+
+    res = pyl.pval_objects(
+        letters[1:7],
+        letters[2:19],
+        letters[3:8],
+        universe1=letters,
+        type="3N",
+    )
+    assert res == pytest.approx(0.0007643267, abs=1e-4)
+
+    res = pyl.pval_objects(
+        letters[1:7],
+        letters[2:8],
+        universe1=letters[:16],
+        universe2=letters[1:26],
+        type="2MN",
+    )
+    assert res == pytest.approx(0.01098901, abs=1e-4)
