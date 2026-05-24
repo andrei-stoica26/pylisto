@@ -8,51 +8,53 @@ from .multiple_testing import mt_correct_df
 
 
 def run_listo(
-    list1: Dict[str, Any],
-    list2: Dict[str, Any],
-    list3: Optional[Dict[str, Any]] = None,
+    dict1: Dict[str, Any],
+    dict2: Dict[str, Any],
+    dict3: Optional[Dict[str, Any]] = None,
     universe1: List[str] = None,
     universe2: Optional[List[str]] = None,
     num_col: Optional[str] = None,
     is_high_top: bool = True,
-    max_cutoffs: int = 5000,
-    mt_method: Literal[
-        "BY",
-        "holm",
-        "hochberg",
-        "hommel",
+    max_cutoffs: int = 500,
+    mt_method: Literal [
+        "fdr_by",
         "bonferroni",
-        "BH",
-        "fdr",
-        "none",
-    ] = "BY",
+        "sidak",
+        "holm-sidak",
+        "holm",
+        "simes-hochberg",
+        "hommel",
+        "fdr_bh",
+        "fdr_tsbh",
+        "fdr_tsbky",
+    ] = "fdr_by",
     pval_thr: Optional[float] = None,
     n_cores: int = 1,
     verbose: bool = True,
     **kwargs: Any,
 ) -> pd.DataFrame:
     """
-    Assess the overlap of two or three lists of objects.
+    Assess the overlap of two or three dictionaries of objects.
 
-    This function assesses the overlap of two or three lists of objects
+    This function assesses the overlap of two or three dictionaries of objects
     (character vectors, or data frames having at least one numeric column).
 
     Args:
-        list1:
+        dict1:
             A dictionary containing character vectors or data frames having
             a numeric column. Keys represent group names.
-        list2:
+        dict2:
             A dictionary containing character vectors or data frames having
             a numeric column. Keys represent group names.
-        list3:
+        dict3:
             Optional third dictionary containing character vectors or data
             frames having a numeric column. Keys represent group names.
         universe1:
             Character vector representing the set from which the items
-            corresponding to the elements in `list1` are selected.
+            corresponding to the elements in `dict1` are selected.
         universe2:
             Optional character vector representing the set from which the items
-            corresponding to the elements in `list2` are selected.
+            corresponding to the elements in `dict2` are selected.
         num_col:
             Name of the numeric column if input objects are data frames.
         is_high_top:
@@ -80,11 +82,11 @@ def run_listo(
         penultimate column contains overlap p-values, and the final column
         contains adjusted overlap p-values.
     """
-    if list3 is None:
+    if dict3 is None:
         combinations = [
             (name1, name2)
-            for name1 in list1.keys()
-            for name2 in list2.keys()
+            for name1 in dict1.keys()
+            for name2 in dict2.keys()
         ]
 
         type_: Literal["2N", "2MN", "3N"] = (
@@ -94,9 +96,9 @@ def run_listo(
     else:
         combinations = [
             (name1, name2, name3)
-            for name1 in list1.keys()
-            for name2 in list2.keys()
-            for name3 in list3.keys()
+            for name1 in dict1.keys()
+            for name2 in dict2.keys()
+            for name3 in dict3.keys()
         ]
 
         type_ = "3N"
@@ -116,10 +118,10 @@ def run_listo(
         name1 = row["Group1"]
         name2 = row["Group2"]
 
-        obj1 = list1[name1]
-        obj2 = list2[name2]
+        obj1 = dict1[name1]
+        obj2 = dict2[name2]
 
-        if list3 is None:
+        if dict3 is None:
             obj3 = None
 
             if verbose:
@@ -130,7 +132,7 @@ def run_listo(
 
         else:
             name3 = row["Group3"]
-            obj3 = list3[name3]
+            obj3 = dict3[name3]
 
             if verbose:
                 print(

@@ -137,15 +137,14 @@ def pval_objects_core(
 
 
 def pval_objects(
-    obj1: Any,
-    obj2: Any,
-    obj3: Optional[Any] = None,
-    universe1: Sequence[Any] = None,
-    universe2: Optional[Sequence[Any]] = None,
+    obj1: Union[List[str], pd.DataFrame],
+    obj2: Union[List[str], pd.DataFrame],
+    universe1: List[str],
+    obj3: Optional[Union[List[str], pd.DataFrame]] = None,
+    universe2: Optional[List[str]] = None,
     num_col: Optional[str] = None,
     is_high_top: bool = True,
-    max_cutoffs: int = 5000,
-   
+    max_cutoffs: int = 500,
     mt_method: Literal [
         "fdr_by",
         "bonferroni",
