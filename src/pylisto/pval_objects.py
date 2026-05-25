@@ -1,4 +1,4 @@
-from typing import Any, Callable, Iterable, Optional, Literal, Union, List
+from typing import Callable, Iterable, Optional, Literal, Union, List
 import pandas as pd
 import operator
 from multiprocessing import Pool

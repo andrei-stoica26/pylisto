@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Literal, Optional
+from typing import Dict, Union, List, Literal, Optional
 import warnings
 import pandas as pd
 
@@ -8,9 +8,9 @@ from .multiple_testing import mt_correct_df
 
 
 def run_listo(
-    dict1: Dict[str, Any],
-    dict2: Dict[str, Any],
-    dict3: Optional[Dict[str, Any]] = None,
+    dict1: Dict[str, Union[List[str], pd.DataFrame]],
+    dict2: Dict[str, Union[List[str], pd.DataFrame]],
+    dict3: Optional[Dict[str, Union[List[str], pd.DataFrame]]] = None,
     universe1: List[str] = None,
     universe2: Optional[List[str]] = None,
     num_col: Optional[str] = None,
