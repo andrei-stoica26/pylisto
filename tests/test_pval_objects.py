@@ -16,8 +16,8 @@ def test_pval_objects():
     res = pyl.pval_objects(
         letters[1:7],
         letters[2:19],
+        letters,
         letters[3:8],
-        universe1=letters,
         type="3N",
     )
     assert res == pytest.approx(0.0007643267, abs=1e-4)
