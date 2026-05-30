@@ -52,3 +52,5 @@ def test_run_listo():
     res = pyl.run_listo(dict1, dict2, dict4, universe1=universe1, num_col='cost', verbose=False)
     val = list(res["pvalAdj"])[0]
     assert val == pytest.approx(0.001764, abs=1e-4)
+
+test_run_listo()

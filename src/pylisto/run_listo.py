@@ -29,7 +29,6 @@ def run_listo(
         "fdr_tsbky",
     ] = "fdr_by",
     pval_thr: Optional[float] = None,
-    n_cores: int = 1,
     verbose: bool = True,
     **kwargs: Any,
 ) -> pd.DataFrame:
@@ -69,8 +68,6 @@ def run_listo(
         pval_thr:
             Threshold used to filter results based on adjusted p-values.
             If None, no filtering is performed.
-        n_cores:
-            Number of cores to use for parallel computation.
         verbose:
             Whether progress messages should be printed.
         **kwargs:
@@ -150,7 +147,6 @@ def run_listo(
             is_high_top=is_high_top,
             max_cutoffs=max_cutoffs,
             mt_method=mt_method,
-            n_cores=n_cores,
             type=type_,
         )
 

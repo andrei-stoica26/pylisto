@@ -1,7 +1,6 @@
 from typing import Callable, Iterable, Optional, Literal, Union, List
 import pandas as pd
 import operator
-from multiprocessing import Pool
 
 
 from .pval_sets import pval_sets_2n, pval_sets_2mn, pval_sets_3n
@@ -157,7 +156,6 @@ def pval_objects(
         "fdr_tsbh",
         "fdr_tsbky",
     ] = "fdr_by",
-    n_cores: int = 1,
     type: Literal["2N", "2MN", "3N"] = "2N",
 ) -> float:
     """
@@ -190,10 +188,6 @@ def pval_objects(
             Maximum number of cutoffs to generate for overlap testing.
         mt_method:
             Multiple testing correction method.
-        n_cores:
-            Number of cores to use for parallel computation. For overlap
-            assessments between sets belonging to the same universe ("2N"),
-            parallelization is generally not recommended.
         type:
             Type of overlap assessment. One of:
             - "2N": two sets belonging to the same universe
@@ -219,8 +213,7 @@ def pval_objects(
         operator.gt if is_high_top else operator.lt
     )
 
-    def _compute_pval(cutoff: Union[int, float]) -> float:
-        return pval_objects_core(
+    pvals: List[float] = [pval_objects_core(
             obj1=obj1,
             obj2=obj2,
             obj3=obj3,
@@ -230,19 +223,7 @@ def pval_objects(
             cutoff=cutoff,
             comp_fun=comp_fun,
             type=type,
-        )
-
-    if n_cores == 1:
-        pvals: List[float] = [_compute_pval(cutoff) for cutoff in cutoffs]
-    else:
-        if type == "2N":
-            print(
-                "Warning: Parallelization is not recommended for 2N overlap "
-                "assessments. Consider setting `n_cores` back to 1."
-            )
-
-        with Pool(processes=n_cores) as pool:
-            pvals = pool.map(_compute_pval, cutoffs)
+        ) for cutoff in cutoffs]
 
     pval: float = mt_correct_v(
         pvals=pvals,
