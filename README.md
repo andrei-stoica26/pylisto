@@ -16,7 +16,11 @@ setting. Thus, the implementation of `pylisto` uses general Python objects
 
 ## Installation
 
-Work in progress
+Install with:
+
+```
+pip install pylisto
+```
 
 ## Description and usage
 
