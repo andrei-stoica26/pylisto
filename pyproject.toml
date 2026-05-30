@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pylisto"
-version = "0.0.27"
+version = "0.0.30"
 authors = [
   { name="Andrei-Florian Stoica", email="andreistoica@foxmail.com" },
 ]
@@ -18,6 +18,8 @@ classifiers = [
 dependencies = [
   "numpy",
   "pandas",
+  "scipy",
+  "statsmodels",
   "sympy"
 ]
 license = "MIT"

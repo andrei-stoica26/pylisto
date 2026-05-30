@@ -86,7 +86,7 @@ def run_listo(
             for name2 in dict2.keys()
         ]
 
-        type_: Literal["2N", "2MN", "3N"] = (
+        overlap_type: Literal["2N", "2MN", "3N"] = (
             "2N" if universe2 is None else "2MN"
         )
 
@@ -98,7 +98,7 @@ def run_listo(
             for name3 in dict3.keys()
         ]
 
-        type_ = "3N"
+        overlap_type = "3N"
 
         if universe2 is not None:
             warnings.warn(
@@ -147,7 +147,7 @@ def run_listo(
             is_high_top=is_high_top,
             max_cutoffs=max_cutoffs,
             mt_method=mt_method,
-            type=type_,
+            overlap_type=overlap_type,
         )
 
         pvals.append(pval)

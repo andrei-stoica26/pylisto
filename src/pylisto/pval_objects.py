@@ -71,7 +71,7 @@ def pval_objects_core(
     num_col: Optional[str] = None,
     cutoff: Optional[float] = None,
     comp_fun: Callable = lambda x, y: x > y,
-    type: Literal["2N", "2MN", "3N"] = "2N",
+    overlap_type: Literal["2N", "2MN", "3N"] = "2N",
 ) -> float:
     """
     Compute the p-value of overlap for two or three objects.
@@ -79,7 +79,7 @@ def pval_objects_core(
     This function:
     1. Filters input objects using `filter_items`
     2. Converts filtered results into sets of names
-    3. Dispatches to the appropriate p-value function depending on `type`
+    3. Dispatches to the appropriate p-value function depending on `overlap_type`
 
     Args:
         obj1:
@@ -87,7 +87,7 @@ def pval_objects_core(
         obj2:
             Second input object (list of strings or pandas DataFrame).
         obj3:
-            Optional third input object (required when type = "3N").
+            Optional third input object (required when overlap_type = "3N").
         universe1:
             Set from which items in obj1 are selected.
         universe2:
@@ -98,7 +98,7 @@ def pval_objects_core(
             Threshold used for filtering.
         comp_fun:
             Comparison function applied to numeric column and cutoff.
-        type:
+        overlap_type:
             Type of computation: "2N", "2MN", or "3N".
 
     Returns:
@@ -106,7 +106,7 @@ def pval_objects_core(
 
     Raises:
         ValueError:
-            If required arguments for a given `type` are missing.
+            If required arguments for a given `overlap_type` are missing.
     """
 
     names1 = filter_items(obj1, num_col=num_col, cutoff=cutoff, comp_fun=comp_fun)
@@ -115,24 +115,24 @@ def pval_objects_core(
     names1 = list(names1)
     names2 = list(names2)
 
-    if type == "2N":
+    if overlap_type == "2N":
         return pval_sets_2n(names1, names2, universe1)
 
-    if type == "2MN":
+    if overlap_type == "2MN":
         if universe2 is None:
-            raise ValueError("`universe2` must be provided when type = '2MN'.")
+            raise ValueError("`universe2` must be provided when overlap_type = '2MN'.")
         return pval_sets_2mn(names1, names2, universe1, universe2)
 
-    if type == "3N":
+    if overlap_type == "3N":
         if obj3 is None:
-            raise ValueError("`obj3` must be provided when type = '3N'.")
+            raise ValueError("`obj3` must be provided when overlap_type = '3N'.")
 
         names3 = filter_items(obj3, num_col=num_col, cutoff=cutoff, comp_fun=comp_fun)
         names3 = list(names3)
 
         return pval_sets_3n(names1, names2, names3, universe1)
 
-    raise ValueError("Unsupported type provided.")
+    raise ValueError("Unsupported `overlap_type` provided.")
 
 
 def pval_objects(
@@ -156,7 +156,7 @@ def pval_objects(
         "fdr_tsbh",
         "fdr_tsbky",
     ] = "fdr_by",
-    type: Literal["2N", "2MN", "3N"] = "2N",
+    overlap_type: Literal["2N", "2MN", "3N"] = "2N",
 ) -> float:
     """
     Assess the statistical significance of the overlap of two or three objects.
@@ -188,7 +188,7 @@ def pval_objects(
             Maximum number of cutoffs to generate for overlap testing.
         mt_method:
             Multiple testing correction method.
-        type:
+        overlap_type:
             Type of overlap assessment. One of:
             - "2N": two sets belonging to the same universe
             - "2MN": two sets belonging to different universes
@@ -222,7 +222,7 @@ def pval_objects(
             num_col=num_col,
             cutoff=cutoff,
             comp_fun=comp_fun,
-            type=type,
+            overlap_type=overlap_type,
         ) for cutoff in cutoffs]
 
     pval: float = mt_correct_v(
